@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Resell Vehicle</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+    <style>
+        .hero-bg { background: #121212; }
+        .glass-effect { background: rgba(255, 255, 255, 0.05); }
+        .form-input {
+            width: 100%;
+            background: #1f2937;
+            border: 1px solid #374151;
+            padding: 0.75rem;
+            border-radius: 0.375rem;
+            color: #d1d5db;
+        }
+    </style>
+</head>
+<body class="hero-bg text-white font-sans p-8 flex items-center justify-center min-h-screen">
+
+    <div class="max-w-xl w-full glass-effect p-8 rounded-2xl shadow-xl border border-gray-800">
+        <h2 class="text-3xl font-bold text-center mb-6 text-yellow-500">Resell Vehicle</h2>
+        <p class="text-center text-gray-400 mb-8">Update details for the next buyer.</p>
+
+        <form th:action="@{/vehicle/resell/{id}(id=${vehicle.id})}" method="post" enctype="multipart/form-data">
+            
+            <div class="mb-4">
+                <label class="block text-gray-400 mb-1">Vehicle Number (Read Only)</label>
+                <input type="text" th:value="${vehicle.vehicleNumber}" readonly class="form-input bg-gray-900 cursor-not-allowed text-gray-500" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-400 mb-1">New Price ($)</label>
+                <input type="number" name="price" th:value="${vehicle.price}" required class="form-input" />
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-gray-400 mb-1">Update Description / Accident History</label>
+                <textarea name="description" th:text="${vehicle.accidentsHistory}" class="form-input" rows="3"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div>
+                    <label class="block text-gray-400 mb-1">New Image (Optional)</label>
+                    <input type="file" name="image" accept="image/*" class="form-input" />
+                </div>
+                <div>
+                    <label class="block text-gray-400 mb-1">New Document (Optional)</label>
+                    <input type="file" name="document" accept="application/pdf" class="form-input" />
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <a href="/buyer/dashboard" class="w-1/2 py-3 bg-gray-700 hover:bg-gray-600 rounded text-center text-white font-bold transition">
+                    Cancel
+                </a>
+                <button type="submit" class="w-1/2 py-3 bg-gradient-to-r from-yellow-600 to-orange-600 rounded text-center text-white font-bold shadow-lg hover:shadow-xl hover:from-yellow-500 hover:to-orange-500 transition">
+                    Confirm Resell
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</body>
+</html>

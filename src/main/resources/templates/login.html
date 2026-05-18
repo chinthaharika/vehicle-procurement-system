@@ -1,0 +1,87 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Login - Smart Vehicle System</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link th:href="@{/css/login.css}" rel="stylesheet" />
+  </head>
+  <body
+    class="bg-black text-white h-screen flex items-center justify-center overflow-hidden"
+  >
+    <div class="animated-background"></div>
+    <div class="shine-card w-full max-w-md">
+      <div class="shine-card-content p-8">
+        <h2
+          class="text-3xl font-bold text-center mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500"
+        >
+          Welcome Back
+        </h2>
+
+        <div
+          th:if="${error}"
+          class="bg-red-500 bg-opacity-20 text-red-200 p-3 rounded mb-4 text-center border border-red-500/30"
+          th:text="${error}"
+        ></div>
+        <div
+          th:if="${param.success}"
+          class="bg-green-500 bg-opacity-20 text-green-200 p-3 rounded mb-4 text-center border border-green-500/30"
+          th:text="${param.success}"
+        ></div>
+
+        <form th:action="@{/login}" method="post" class="space-y-6">
+          <div>
+            <label
+              class="block text-gray-300 mb-2 text-sm uppercase tracking-wide"
+              >Login ID</label
+            >
+            <input
+              type="text"
+              name="loginId"
+              class="w-full modern-input rounded p-3 text-white focus:outline-none"
+              placeholder="Enter your Login ID"
+              required
+            />
+          </div>
+          <div>
+            <label
+              class="block text-gray-300 mb-2 text-sm uppercase tracking-wide"
+              >Password</label
+            >
+            <input
+              type="password"
+              name="password"
+              class="w-full modern-input rounded p-3 text-white focus:outline-none"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            class="w-full modern-btn text-white py-3 rounded-lg font-bold shadow-lg mt-4"
+          >
+            Sign In
+          </button>
+        </form>
+
+        <p class="mt-8 text-center text-gray-400 text-sm">
+          Don't have an account?
+          <a
+            th:href="@{/register}"
+            class="text-blue-400 hover:text-blue-300 font-medium transition"
+            >Create Account</a
+          >
+        </p>
+        <p class="mt-4 text-center">
+          <a
+            th:href="@{/}"
+            class="text-gray-500 hover:text-gray-300 text-xs transition"
+            >← Back to Home</a
+          >
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

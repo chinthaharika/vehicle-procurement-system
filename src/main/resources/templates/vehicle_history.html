@@ -1,0 +1,421 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Vehicle Blockchain Ledger</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background-color: #0d1117;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .font-mono {
+        font-family: "JetBrains Mono", monospace;
+      }
+      .block-container {
+        position: relative;
+        margin-bottom: 3rem;
+        transition: transform 0.3s ease;
+      }
+      .block-container:hover {
+        transform: translateY(-2px);
+      }
+      .chain-link {
+        position: absolute;
+        left: 50%;
+        bottom: -3rem;
+        width: 4px;
+        height: 3rem;
+        background: #30363d;
+        transform: translateX(-50%);
+        z-index: 0;
+      }
+      .block-card {
+        background: #161b22;
+        border: 1px solid #30363d;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+      }
+      .hash-text {
+        color: #8b949e;
+      }
+      .verified-badge {
+        background: rgba(46, 160, 67, 0.15);
+        color: #3fb950;
+        border: 1px solid rgba(46, 160, 67, 0.4);
+      }
+      .genesis-badge {
+        background: rgba(163, 113, 247, 0.15);
+        color: #d2a8ff;
+        border: 1px solid rgba(163, 113, 247, 0.4);
+      }
+      /* Custom Scrollbar for Horizontal View */
+      .custom-scrollbar::-webkit-scrollbar {
+        height: 12px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: #0d1117;
+        border-radius: 6px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #30363d;
+        border-radius: 6px;
+        border: 2px solid #0d1117;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+        background: #58a6ff;
+      }
+    </style>
+  </head>
+  <body class="text-gray-300 min-h-screen p-8">
+    <div class="max-w-4xl mx-auto">
+      <!-- Header -->
+      <div
+        class="flex justify-between items-center mb-12 border-b border-gray-800 pb-6"
+      >
+        <div>
+          <h1 class="text-3xl font-bold text-white mb-2">Blockchain Ledger</h1>
+          <p class="text-gray-400 font-mono text-sm">
+            ASSET ID:
+            <span class="text-blue-400" th:text="${vehicle.vehicleNumber}"
+              >TN-XX</span
+            >
+          </p>
+        </div>
+        <a
+          href="/buyer/dashboard"
+          class="px-4 py-2 border border-gray-700 rounded hover:bg-gray-800 transition text-sm"
+        >
+          ← Return to Dashboard
+        </a>
+      </div>
+
+      <!-- View Toggle Controls -->
+      <div class="flex justify-between items-center mb-8">
+        <h2 class="text-xl font-bold text-gray-400">Transaction History</h2>
+
+        <!-- Toggle Buttons -->
+        <div class="flex bg-gray-800 rounded-lg p-1 border border-gray-700">
+          <button
+            id="view-vertical-btn"
+            onclick="showVertical()"
+            type="button"
+            class="px-4 py-2 rounded text-sm font-bold transition bg-gray-700 text-white shadow"
+          >
+            Vertical (Timeline)
+          </button>
+          <button
+            id="view-horizontal-btn"
+            onclick="showHorizontal()"
+            type="button"
+            class="px-4 py-2 rounded text-sm font-bold transition text-gray-400 hover:text-white"
+          >
+            Horizontal (Flow)
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW 1: VERTICAL TIMELINE (Default) -->
+      <div id="view-vertical" class="space-y-12 block">
+        <!-- Loop through history (Newest First) -->
+        <div
+          th:each="history, iter : ${historyList}"
+          class="block-container relative"
+        >
+          <!-- Central Chain Line (Except for last item) -->
+          <div th:unless="${iter.last}" class="chain-link"></div>
+
+          <!-- Block Box -->
+          <div class="block-card rounded-lg p-6 relative z-10">
+            <!-- Block Header -->
+            <div
+              class="flex justify-between items-center mb-4 border-b border-gray-800 pb-4"
+            >
+              <div class="flex items-center gap-3">
+                <span class="font-mono text-xl font-bold text-white"
+                  >BLOCK #<span th:text="${iter.size - iter.index}"
+                    >1</span
+                  ></span
+                >
+
+                <span
+                  th:if="${iter.last}"
+                  class="genesis-badge text-xs px-2 py-1 rounded font-mono font-bold tracking-wider"
+                  >GENESIS BLOCK</span
+                >
+                <span
+                  th:unless="${iter.last}"
+                  class="verified-badge text-xs px-2 py-1 rounded font-mono font-bold tracking-wider"
+                  >VERIFIED TRANSACTION</span
+                >
+              </div>
+              <div class="text-right">
+                <div class="text-xs text-gray-500 font-mono mb-1">
+                  TIMESTAMP
+                </div>
+                <div
+                  class="text-sm font-mono text-gray-300"
+                  th:text="${#temporals.format(history.transferTime, 'yyyy-MM-dd HH:mm:ss')}"
+                >
+                  2024-01-01
+                </div>
+              </div>
+            </div>
+
+            <!-- Block Body -->
+            <div class="space-y-6">
+              <!-- Transaction Details -->
+              <div class="w-full">
+                <div
+                  class="flex justify-between items-center bg-black/20 p-4 rounded mb-4 border border-gray-800"
+                  th:classappend="${iter.first} ? 'border-green-500/50 bg-green-900/10' : ''"
+                >
+                  <div class="text-center">
+                    <div class="text-xs text-gray-500 mb-1">FROM</div>
+                    <div
+                      class="font-bold text-white flex flex-col items-center"
+                    >
+                      <span
+                        th:text="${history.fromUser != null ? history.fromUser.name : 'SYSTEM'}"
+                        >Alice</span
+                      >
+                      <span
+                        th:unless="${iter.first} or ${history.fromUser == null}"
+                        class="mt-1 text-[9px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded border border-gray-700"
+                        >PREV OWNER</span
+                      >
+                    </div>
+                  </div>
+                  <div class="text-gray-500">➜</div>
+                  <div class="text-center">
+                    <div class="text-xs text-gray-500 mb-1">TO</div>
+                    <div
+                      class="font-bold text-white flex flex-col items-center"
+                    >
+                      <span th:text="${history.toUser.name}">Bob</span>
+                      <span
+                        th:if="${iter.first}"
+                        class="mt-1 text-[9px] bg-green-600 text-white px-2 py-0.5 rounded shadow animate-pulse"
+                        >CURRENT OWNER</span
+                      >
+                      <span
+                        th:unless="${iter.first}"
+                        class="mt-1 text-[9px] bg-gray-800 text-gray-400 px-1.5 py-0.5 rounded border border-gray-700"
+                        >PREV OWNER</span
+                      >
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <div class="text-xs text-gray-500 mb-1">VALUE</div>
+                  <div
+                    class="text-xl font-mono text-green-400"
+                    th:text="${'$' + history.price}"
+                  >
+                    $5000.00
+                  </div>
+                </div>
+              </div>
+
+              <!-- Hashes -->
+              <div
+                class="mt-6 pt-6 border-t border-gray-700/50 space-y-4 w-full"
+              >
+                <div class="w-full">
+                  <div
+                    class="text-[10px] text-gray-500 uppercase tracking-wider font-semibold mb-1"
+                  >
+                    Previous Hash
+                  </div>
+                  <div
+                    class="block w-full bg-black/50 p-3 rounded border border-gray-700 font-mono text-xs text-gray-500 break-all shadow-inner"
+                  >
+                    <span th:text="${history.previousHash}">0000...</span>
+                  </div>
+                </div>
+                <div class="w-full">
+                  <div
+                    class="text-[10px] text-blue-400/80 uppercase tracking-wider font-semibold mb-1"
+                  >
+                    Current Hash
+                  </div>
+                  <div
+                    class="block w-full bg-black/50 p-3 rounded border border-blue-500/20 font-mono text-xs text-blue-400 break-all shadow-inner"
+                  >
+                    <span th:text="${history.transactionHash}">8f43...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW 2: HORIZONTAL FLOW (Replaces Old Implementation) -->
+      <!-- Important: Iterates over chronologicalList (Oldest -> Newest) -->
+      <div id="view-horizontal" class="hidden w-full overflow-x-auto pb-12">
+        <div
+          th:if="${#lists.isEmpty(chronologicalList)}"
+          class="text-center text-red-500 p-8"
+        >
+          No history available to display.
+        </div>
+
+        <div
+          class="flex items-start min-w-max p-4 gap-0"
+          th:unless="${#lists.isEmpty(chronologicalList)}"
+        >
+          <div
+            th:each="history, iter : ${chronologicalList}"
+            th:with="isLast=${iter.last}, isFirst=${iter.first}"
+            class="flex items-center"
+          >
+            <!-- THE BLOCK -->
+            <div
+              class="w-64 bg-[#161b22] border border-gray-700 rounded-lg p-4 shadow-lg hover:border-blue-500 transition relative flex-shrink-0"
+              th:classappend="${isLast} ? 'ring-1 ring-green-500 border-green-500' : ''"
+            >
+              <!-- Block Header -->
+              <div
+                class="flex justify-between items-center mb-2 border-b border-gray-800 pb-2"
+              >
+                <span
+                  class="font-mono font-bold text-white text-lg"
+                  th:text="${'BLOCK #' + iter.count}"
+                  >#1</span
+                >
+                <span
+                  th:if="${isFirst}"
+                  class="text-[10px] bg-purple-900 text-purple-200 px-1 rounded"
+                  >GENESIS</span
+                >
+                <span
+                  th:if="${isLast}"
+                  class="text-[10px] bg-green-900 text-green-200 px-1 rounded"
+                  >CURRENT</span
+                >
+              </div>
+
+              <!-- Block Content -->
+              <div class="text-sm mb-3">
+                <div
+                  class="flex justify-between items-center bg-black/40 p-2 rounded"
+                >
+                  <span
+                    class="text-gray-400"
+                    th:text="${history.fromUser != null ? history.fromUser.name : 'SYS'}"
+                    >A</span
+                  >
+                  <span class="text-gray-600">➜</span>
+                  <span
+                    class="text-white font-bold"
+                    th:text="${history.toUser.name}"
+                    >B</span
+                  >
+                </div>
+              </div>
+
+              <!-- Footer/Hashes -->
+              <div class="space-y-1">
+                <div class="flex justify-between">
+                  <span class="text-[10px] text-gray-500">Value</span>
+                  <span
+                    class="text-[10px] text-green-400 font-mono"
+                    th:text="${'$' + history.price}"
+                    >$100</span
+                  >
+                </div>
+              </div>
+            </div>
+
+            <!-- THE CONNECTOR (ARROW TO NEXT BLOCK) -->
+            <!-- Show connector if this is NOT the last block -->
+            <div
+              th:unless="${isLast}"
+              class="flex flex-col items-center justify-center mx-2 w-24"
+            >
+              <!-- Label above arrow -->
+              <span
+                class="text-[9px] text-green-500/80 mb-1 font-mono uppercase tracking-wider"
+                >Linked</span
+              >
+
+              <!-- Arrow Line -->
+              <div
+                class="relative w-full h-[2px] bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"
+              >
+                <!-- Arrowhead -->
+                <div
+                  class="absolute right-0 top-1/2 transform -translate-y-1/2 w-0 h-0 border-t-[5px] border-b-[5px] border-l-[8px] border-t-transparent border-b-transparent border-l-green-500 drop-shadow-[0_0_8px_rgba(34,197,94,0.8)]"
+                ></div>
+              </div>
+
+              <!-- Hash Label below -->
+              <div
+                class="mt-1 text-[8px] font-mono text-gray-500 truncate w-20 text-center select-all hover:text-white transition"
+                title="Transaction Hash"
+                th:text="${#strings.substring(history.transactionHash, 0, 8) + '...'}"
+              >
+                HASH...
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        // Simple Toggle Logic
+        function showVertical() {
+          document.getElementById("view-vertical").classList.remove("hidden");
+          document.getElementById("view-horizontal").classList.add("hidden");
+
+          // Update Buttons
+          document
+            .getElementById("view-vertical-btn")
+            .classList.add("bg-gray-700", "text-white", "shadow");
+          document
+            .getElementById("view-vertical-btn")
+            .classList.remove("text-gray-400", "hover:text-white");
+
+          document
+            .getElementById("view-horizontal-btn")
+            .classList.remove("bg-gray-700", "text-white", "shadow");
+          document
+            .getElementById("view-horizontal-btn")
+            .classList.add("text-gray-400", "hover:text-white");
+        }
+
+        function showHorizontal() {
+          document.getElementById("view-vertical").classList.add("hidden");
+          document.getElementById("view-horizontal").classList.remove("hidden");
+
+          // Update Buttons
+          document
+            .getElementById("view-horizontal-btn")
+            .classList.add("bg-gray-700", "text-white", "shadow");
+          document
+            .getElementById("view-horizontal-btn")
+            .classList.remove("text-gray-400", "hover:text-white");
+
+          document
+            .getElementById("view-vertical-btn")
+            .classList.remove("bg-gray-700", "text-white", "shadow");
+          document
+            .getElementById("view-vertical-btn")
+            .classList.add("text-gray-400", "hover:text-white");
+        }
+      </script>
+
+      <div class="mt-12 text-center text-xs text-gray-600 font-mono">
+        <p>
+          IMMUTABLE VEHICLE LEDGER • SHA-256 ENCRYPTION • SMART VEHICLE SYSTEM
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

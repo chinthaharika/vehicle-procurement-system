@@ -1,0 +1,151 @@
+/* login.css */
+@property --angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  overflow: hidden;
+  background-color: #000;
+}
+
+/* Animated Background */
+.animated-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(76, 29, 149, 0.2),
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(59, 130, 246, 0.2),
+      rgba(0, 0, 0, 0)
+    ),
+    radial-gradient(
+      circle at 0% 100%,
+      rgba(236, 72, 153, 0.2),
+      rgba(0, 0, 0, 0)
+    );
+  filter: blur(40px);
+  animation: bg-move 10s ease-in-out infinite alternate;
+}
+
+@keyframes bg-move {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+/* Shine Border Card */
+.shine-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+.shine-card::before,
+.shine-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  background: conic-gradient(
+    from var(--angle),
+    transparent 20%,
+    rgba(59, 130, 246, 0.8),
+    transparent 80%
+  );
+  z-index: -1;
+  animation: shine-rotate 3s linear infinite;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.shine-card:hover::before,
+.shine-card:hover::after {
+  opacity: 1;
+}
+
+.shine-card::after {
+  filter: blur(20px);
+}
+
+@keyframes shine-rotate {
+  to {
+    --angle: 360deg;
+  }
+}
+
+/* Inner content background to cover the center of shine border */
+.shine-card-content {
+  background: rgba(10, 10, 10, 0.95);
+  border-radius: inherit;
+  height: 100%;
+  width: 100%;
+  position: relative;
+  z-index: 10;
+}
+
+/* Inputs */
+.modern-input {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+.modern-input:focus {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(59, 130, 246, 0.5);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+}
+
+/* Button */
+.modern-btn {
+  background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s;
+}
+
+.modern-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px -10px rgba(99, 102, 241, 0.5);
+}
+
+.modern-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.modern-btn:hover::after {
+  left: 100%;
+}
